@@ -8,14 +8,21 @@ If you use this library on your commercial/personal projects, you can help us by
 
 This gives you the power to prioritize our work and support the project contributors. Moreover it'll guarantee the project will be updated and maintained in the long run.
 
-[![issuehunt-image](https://github.com/BoostIO/issuehunt-materials/blob/master/issuehunt-badge@1x.png?raw=true)](https://issuehunt.io/repos/43406976)
-
+[![issuehunt-image](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/repos/43406976)
 
 ## Getting started
 
 ### Mostly automatic install
-1. `npm install react-native-share --save`
+1. `yarn add react-native-share`
 2. `react-native link react-native-share`
+
+#### How to use master branch?
+
+We recommend using the releases from npm, however you can use the master branch if you need any feature that is not available on NPM. By doing this you will be able to use unreleased features, but the module may be less stable. 
+
+**yarn**: `yarn add react-native-share@git+https://git@github.com/react-native-community/react-native-share.git`
+
+**npm**: `npm install --save react-native-share@git+https://git@github.com/react-native-community/react-native-share.git`
 
 ### Manual install
 
@@ -35,7 +42,8 @@ This gives you the power to prioritize our work and support the project contribu
 3. Go to `node_modules` ➜ `react-native-share` ➜ `ios` and add `RNShare.xcodeproj`
 4. In XCode, in the project navigator, select your project. Add `libRNShare.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 5. In XCode, in the project navigator, select your project. Add `Social.framework` and `MessageUI.framework` to your project's `General` ➜ `Linked Frameworks and Libraries`
-6. In file Info.plist, add
+6. In iOS 9 or higher, You should add app list that you will share.
+If you want to share Whatsapp and Mailto, you should write `LSApplicationQueriesSchemes` in info.plist  
     ```xml
     <key>LSApplicationQueriesSchemes</key>
     <array>
@@ -50,13 +58,32 @@ This gives you the power to prioritize our work and support the project contribu
     ```
 8. Run your project (`Cmd+R`)
 
+#### iOS Install(using Pods)
+
+If you wish, you can use [cocopoads](https://cocoapods.org/) to use react-native-share.
+
+You just need to add to your Podfile the react-native-share dependency.
+
+```ruby
+  # React-Native-Share pod
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+```
+
+After that, just run a `pod install` or `pod udpate` to get up and running with react-native-share. 
+
+Then run a `react-native link react-native-share`, and doing the steps 6 and 7.
+
+You can also see our example to see how you need to setup your podfile.
+
+Btw, We also recommend reading this (amazing article)[https://shift.infinite.red/beginner-s-guide-to-using-cocoapods-with-react-native-46cb4d372995] about how pods and rn work together. =D
+
 #### Android Install
 
 1. `npm install react-native-share --save`
 2. Open up `android/app/src/main/java/[...]/MainApplication.java`
-  - Add `import cl.json.RNSharePackage;` and `import cl.json.ShareApplication;` to the imports at the top of the file
-  - Add `new RNSharePackage()` to the list returned by the `getPackages()`
-    method
+    - Add `import cl.json.RNSharePackage;` and `import cl.json.ShareApplication;` to the imports at the top of the file
+    - Add `new RNSharePackage()` to the list returned by the `getPackages()` method
+
 3. Append the following lines to `android/settings.gradle`:
   	```
   	include ':react-native-share'
@@ -68,61 +95,7 @@ This gives you the power to prioritize our work and support the project contribu
     ```
       compile project(':react-native-share')
     ```
-5. Follow this
-   [guide](https://developer.android.com/training/secure-file-sharing/setup-sharing.html).
-   For example:
-  - Put this in `AndroidManifest.xml` where `applicationId` is something that
-    you have defined in `android/app/build.gradle`:
-
-    ```xml
-      <application>
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
-      </application>
-    ```
-
-  - Create a `filepaths.xml` under this directory:
-    `android/app/src/main/res/xml`. In this file, add the following contents:
-
-    ```xml
-      <?xml version="1.0" encoding="utf-8"?>
-      <paths xmlns:android="http://schemas.android.com/apk/res/android">
-          <external-path name="myexternalimages" path="Download/" />
-      </paths>
-    ```
-
-6. Edit your `MainApplication` class to implement `ShareApplication`
-  - Also add the `getFileProviderAuthority` method to your MainApplication class,
-    and have it return the `android:authorities` that was added in
-    AndroidManifest file.
-  - For example: Replace the `com.example.yourappidhere` below with the
-    `applicationId` that is defined in your `android/app/build.gradle`. It must
-    be [hard-coded here to work
-    properly](https://github.com/EstebanFuentealba/react-native-share/issues/200#issuecomment-361938532).
-
-    ```java
-    import cl.json.ShareApplication
-
-    class MyApplication extends Application implements ShareApplication, ReactApplication {
-
-    {
-
-         //...
-
-         @Override
-         public String getFileProviderAuthority() {
-                return "com.example.yourappidhere.provider";
-         }
-
-    }
-    ```
+5. **(Optional)** [Follow this for implementing Provider](#adding-your-implementation-of-fileprovider)
 
 #### Windows Install
 
@@ -160,7 +133,7 @@ Supported options:
 | title | string   |  (optional) |
 | subject | string   | (optional) |
 | excludedActivityTypes | string   | (optional) |
-| failOnCancel | boolean | (defaults to true) On iOS, specifies whether promise should reject if user cancels share dialog (optional) |
+| failOnCancel | boolean | (defaults to true) Specifies whether promise should reject if user cancels share dialog (optional) |
 | showAppsToView | boolean | (optional) only android|
 
 #### shareSingle(options) (in iOS & Android)
@@ -179,6 +152,7 @@ Supported options:
 | title | string   |  (optional) |
 | subject | string   | (optional) |
 | social | string   | supported social apps: [List](#static-values-for-social)  |
+| forceDialog | boolean | (optional) only android. Avoid showing dialog with buttons Just Once / Always. Useful for Instagram to always ask user if share as Story or Feed |
 
 ***NOTE: If both `message` and `url` are provided `url` will be concatenated to the end of `message` to form the body of the message. If only one is provided it will be used***
 
@@ -220,6 +194,9 @@ Share.shareSingle(shareOptions);
 | **GOOGLEPLUS** | yes   | yes | no |
 | **EMAIL** | yes   | yes | no |
 | **PINTEREST** | yes   | no | no |
+| **SMS** | yes   | no | no |
+| **SNAPCHAT** | yes   | no | no |
+| **MESSENGER** | yes   | no | no |
 
 ## How it looks:
 
@@ -527,3 +504,66 @@ static sharePDFWithAndroid(fileUrl, type) {
     });
 }
 ```
+
+#### Adding your implementation of FileProvider
+
+[Android guide](https://developer.android.com/training/secure-file-sharing/setup-sharing.html).
+   
+- `applicationId` should be defined in the `defaultConfig` section in your `android/app/build.gradle`:
+
+- File: `android/app/build.gradle`
+
+    ```
+    defaultConfig {
+        applicationId "com.yourcompany.yourappname"
+        ...
+    }
+    ```
+    
+- Add this `<provider>` section to your `AndroidManifest.xml`
+
+    File: `AndroidManifest.xml`
+    ```xml
+    <application>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+    </application>
+    ```
+
+- Create a `filepaths.xml` under this directory:
+`android/app/src/main/res/xml`. 
+
+    In this file, add the following contents:
+    
+    File: `android/app/src/main/res/filepaths.xml`
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <paths xmlns:android="http://schemas.android.com/apk/res/android">
+      <external-path name="myexternalimages" path="Download/" />
+    </paths>
+    ```
+
+- Edit your `MainApplication.java` class to add `implements ShareApplication` and `getFileProviderAuthority`
+- The `getFileProviderAuthority` function returns the `android:authorities` value added in the `AndroidManifest.xml` file
+- `applicationId` is defined in the `defaultConfig` section of your `android/app/build.gradle` and referenced using `BuildConfig.APPLICATION_ID`
+
+    ```java
+    import cl.json.ShareApplication
+    public class MainApplication extends Application implements ShareApplication, ReactApplication {
+    
+         @Override
+         public String getFileProviderAuthority() {
+                return BuildConfig.APPLICATION_ID + ".provider";
+         }
+
+         // ...Your own code
+
+    }
+    ```
